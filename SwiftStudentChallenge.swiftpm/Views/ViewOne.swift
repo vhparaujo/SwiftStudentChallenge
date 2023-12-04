@@ -21,20 +21,23 @@ struct ViewOne: View {
           Spacer()
           HStack{
             Spacer()
-          
+            
             NavigationLink(destination: {
               ViewTwo()
             }, label: {
-              Text("Next")
-                .foregroundStyle(.black)
-              Image("tenis")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 100, maxHeight: 100)
-                .padding()
-                .opacity(isAnimating ? 0 : 0.5)
-                .animation(Animation.linear(duration: 1.5).repeatForever(autoreverses: false), value: UUID())
+              ZStack{
+                Image("tenis")
+                  .resizable()
+                  .scaledToFit()
+                  .frame(maxWidth: 100, maxHeight: 100)
+                  .padding()
+                  .shadow(color: .mint, radius: isAnimating ? 0 : 20)
+                  .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: UUID())
+                Text("Next")
+                  .foregroundStyle(.black)
+              }
             })
+            
           }
           .padding()
         }

@@ -13,5 +13,4 @@ struct Texts {
   
   static let text2: String = "I am looking for someone who is interested in learning about tennis and would like to becomes my friend so that I no longer feel lonely. How about you become my friend?"
   
-  
 }
