@@ -8,65 +8,64 @@
 import SwiftUI
 
 struct ViewTwo: View {
-  
-  @State private var isAnimating = false
-  
-  var body: some View {
     
-    NavigationView {
-      
-      VStack {
-        HStack {
-          VStack {
-            Text(Texts.text2)
-              .font(.title)
-            Spacer()
-          }.padding()
-        }.padding(30)
+    var body: some View {
         
-        VStack{
-          Spacer()
-          HStack{
-            Spacer()
+        VStack {
             
-            NavigationLink(destination: {
-              ViewTwo()
-            }, label: {
-              ZStack{
-                Image("tenis")
-                  .resizable()
-                  .scaledToFit()
-                  .frame(maxWidth: 100, maxHeight: 100)
-                  .padding()
-                  .shadow(color: .mint, radius: isAnimating ? 0 : 20)
-                  .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: UUID())
-                Text("Next")
-                  .foregroundStyle(.black)
-              }
-            })
+            ZStack {
+                Image("fundoTexto")
+                    .resizable()
+                    .scaledToFit()
+                HStack {
+                    Text(Texts.text2)
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .padding()
+                }
+                .padding()
+            }.padding(.horizontal)
             
-          }
-          .padding()
-        }
+            VStack{
+                Spacer()
+                HStack{
+                    Spacer()
+                    
+                    NavigationLink(destination: {
+                        ARViewContainer().ignoresSafeArea(.all)
+                    }, label: {
+                        
+                        VStack{
+                            HStack{
+                                Text("Play").foregroundStyle(.white)
+                                
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(.white)
+                                
+                            }.padding()
+                        }.background(RoundedRectangle(cornerRadius: 10)
+                            .foregroundStyle(.green)
+                        )
+                        .padding()
+                        
+                    })
+                    
+                }
+                .padding()
+            }
+            
+        }.background(
+            Image("background")
+                .resizable()
+                .scaledToFill()
+                .clipped()
+                .ignoresSafeArea(.all)
+        )
         
-        .onAppear {
-          self.isAnimating = true
-        }
-        
-      }.background(
-        Image("background")
-          .resizable()
-          .scaledToFill()
-          .clipped()
-          .ignoresSafeArea(.all)
-      )
-      
     }
-    .navigationViewStyle(.stack)
-    
-  }
 }
 
+#warning("apagar o preview")
 #Preview {
-  ViewTwo()
+    ViewTwo()
 }
