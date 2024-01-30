@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  CongratsView.swift
 //
 //
 //  Created by Victor Hugo Pacheco Araujo on 02/12/23.
@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ViewTwo: View {
+    
+    @State var openSheet: Bool = false
     
     var body: some View {
         
@@ -31,24 +33,39 @@ struct ViewTwo: View {
                 HStack{
                     Spacer()
                     
-                    NavigationLink(destination: {
-                        ARViewContainer().ignoresSafeArea(.all)
-                    }, label: {
-                        
-                        VStack{
-                            HStack{
-                                Text("Play").foregroundStyle(.white)
-                                
-                                Image(systemName: "chevron.right")
-                                    .foregroundStyle(.white)
-                                
-                            }.padding()
-                        }.background(RoundedRectangle(cornerRadius: 10)
-                            .foregroundStyle(.green)
-                        )
-                        .padding()
-                        
-                    })
+                    VStack{
+                        HStack{
+                            Text("Next").foregroundStyle(.white)
+                            
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.white)
+                        }.padding()
+                    }.background(RoundedRectangle(cornerRadius: 10)
+                        .foregroundStyle(.green)
+                    )
+                    .padding()
+                    .onTapGesture {
+                        openSheet.toggle()
+                    }
+            
+//                    NavigationLink(destination: {
+//                        ARViewContainer().ignoresSafeArea(.all)
+//                    }, label: {
+//                        
+//                        VStack{
+//                            HStack{
+//                                Text("Play").foregroundStyle(.white)
+//                                
+//                                Image(systemName: "chevron.right")
+//                                    .foregroundStyle(.white)
+//                                
+//                            }.padding()
+//                        }.background(RoundedRectangle(cornerRadius: 10)
+//                            .foregroundStyle(.green)
+//                        )
+//                        .padding()
+//                        
+//                    })
                     
                 }
                 .padding()
@@ -62,10 +79,9 @@ struct ViewTwo: View {
                 .ignoresSafeArea(.all)
         )
         
+        .sheet(isPresented: $openSheet) {
+            RulesView(openSheet: $openSheet)
+        }
+        
     }
-}
-
-#warning("apagar o preview")
-#Preview {
-    ViewTwo()
 }

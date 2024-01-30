@@ -11,29 +11,37 @@ import UIKit
 import Combine
 
 class Coordinator: NSObject, ARSessionDelegate {
+    
     weak var arView: ARView?
     
     var cancellable: AnyCancellable?
     
-    //var movableEntities = [MovableEntity]()
+    var ball: ModelEntity!
+    var racquet: ModelEntity!
+    var racquet2: ModelEntity!
+    var court: ModelEntity!
     
-    var sphere: MovableEntity!
-    var box1: MovableEntity!
-    var floor: ModelEntity!
+    var opponentScore: Int = 0
+    var playerScore: Int = 0
     
     var initialPanPosition: CGPoint = .zero
     
-    func buildEnvironment() {
+    func buildFirstScene() {
+        
         guard let view = arView else { return }
         
-        let anchor = AnchorEntity(plane: .horizontal)
+        let anchor = AnchorEntity(.plane(.horizontal, classification: .any, minimumBounds: .zero))
         
-        floor = ModelEntity(mesh: MeshResource.generatePlane(width: 2, depth: 3.2), materials: [OcclusionMaterial()])
-        floor.generateCollisionShapes(recursive: true)
-        floor.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .default, mode: .static)
-        floor.position.y = -0.01
+        let modelEntity = ModelEntity()
         
-        cancellable = ModelEntity.loadAsync(named: "tennisCourt")
+        let score = ModelEntity(mesh: MeshResource.generateText("Score: \(self.playerScore) X \(self.opponentScore)", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.09), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
+        
+        score.position = [-0.7, 1, 0]
+        
+        cancellable = ModelEntity.loadModelAsync(named: "tennisCourt")
+            .append(ModelEntity.loadModelAsync(named: "ball"))
+            .append(ModelEntity.loadModelAsync(named: "racquet"))
+            .collect()
             .sink(receiveCompletion: { loadCompletion in
                 if case let .failure(error) = loadCompletion {
                     print("Unable to load model \(error)")
@@ -41,91 +49,124 @@ class Coordinator: NSObject, ARSessionDelegate {
                 
                 self.cancellable?.cancel()
                 
-            }, receiveValue: { entity in
+            }, receiveValue: { entities in
+                
+                entities.forEach { entity in
+                    entity.generateCollisionShapes(recursive: true)
+                    entity.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .default, mode: .static)
+                }
+                
+                entities[0].position.z = -1
+                self.court = entities[0]
+                
+                // ball
+                entities[1].position = simd_make_float3(self.court.position.x, self.court.position.y + 1.3, self.court.position.z - 2.3)
+                entities[1].scale = [0.09, 0.09, 0.09]
+                self.ball = entities[1]
                 
                 
-                //        let parentEntity = ModelEntity()
-                //                 parentEntity.addChild(entity)
-                //
-                //                 let entityBounds = entity.visualBounds(relativeTo: parentEntity)
-                //                 parentEntity.physicsBody = PhysicsBodyComponent(massProperties: .default, material: .default, mode: .static)
-                //
-                //
-                //        entity.generateCollisionShapes(recursive: true)
-                //          view.installGestures(.all, for: entity)
+                // racquet yellow
+                entities[2].position = simd_make_float3(self.court.position.x, self.court.position.y + 0.5, self.court.position.z + 1)
                 
-                anchor.addChild(entity)
+                entities[2].scale = [0.2, 0.2, 0.2]
+                self.racquet = entities[2]
                 
-                //        self.floor.scale = entity.scale
-                //        self.floor.position = entity.position
                 
+                // entities
+                entities.forEach { entity in
+                    modelEntity.addChild(entity)
+                }
                 
             })
         
-        box1 = MovableEntity(size: 0.2, color: .purple, shape: .box, physicsMode: .static)
-        box1.position = simd_make_float3(floor.position.x, floor.position.y + 0.7, floor.position.z + 1)
-        
-        sphere = MovableEntity(size: 0.1, color: .red, shape: .sphere, physicsMode: .static)
-        sphere.position = simd_make_float3(floor.position.x, floor.position.y + 1.5, floor.position.z + -0.5) // Adjust the position based on your scene
-        
-        sphere.name = "ball"
-        
-        anchor.addChild(sphere)
-        anchor.addChild(box1)
-        anchor.addChild(floor)
-        
         view.scene.addAnchor(anchor)
-        view.installGestures(.all, for: box1)
         
+        modelEntity.addChild(score)
+        anchor.addChild(modelEntity)
+        
+        view.installGestures(.scale.union(.translation), for: modelEntity)
+    }
+    
+    
+    func removeTheScene() {
+        guard let arView = self.arView else { return }
+        
+        arView.scene.anchors.removeAll()
     }
     
     @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
+            
+        // Calculate the direction from the ball to the racquet
+        let direction = normalize(racquet.position - ball.position)
         
-        guard let view = self.arView else {return}
+        // Apply an impulse to the ball in the calculated direction
+        let impulse = direction * 5.21836
         
-        // this guard let check if doesn't exist an object in the scene with the name "ball"
-        guard view.scene.anchors.first(where: { $0.name == "ball" }) == nil else {
-            return
+        ball.physicsBody?.mode = .dynamic
+        
+        //        ball.addForce(impulse, relativeTo: nil)
+        
+        
+        ball.applyLinearImpulse(impulse, relativeTo: racquet)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+            self.removeTheScene()
+            
         }
         
-        let tapLocation = recognizer.location(in: view)
-        
-        if let entity = view.entity(at: tapLocation) as? MovableEntity {
-            sphere.physicsBody?.mode = .dynamic
-            
-            // Calculate the direction from the camera to box1
-            let direction = normalize(box1.position)
-            
-            // Apply an impulse to the sphere in the calculated direction
-            let impulse = direction * 2.8 // Adjust the magnitude as needed
-            sphere.applyLinearImpulse(impulse, relativeTo: box1)
-        }
     }
     
-    //  @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
+    //    @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
     //
-    //    guard let view = self.arView else {return}
+    //        guard let view = self.arView else {return}
     //
-    //    switch gesture.state {
-    //    case .began:
-    //      // Save the initial position of the pan gesture
-    //      initialPanPosition = gesture.location(in: view)
+    //        switch gesture.state {
+    //        case .began:
     //
-    //    case .changed:
-    //      // Calculate the distance based on the change in x-position of the pan gesture
-    //      let currentPanPosition = gesture.location(in: view)
-    //      let distance = Float(currentPanPosition.x - initialPanPosition.x) * 0.001 // Adjust the multiplier as needed
+    //            // Save the initial position of the pan gesture
+    //            initialPanPosition = gesture.location(in: view)
     //
-    //      // Move the entity along the x-axis
-    //      box1.moveAlongXAxis(distance: distance)
+    //            guard let tappedEntity = view.entity(at: initialPanPosition) as? ModelEntity else {
+    //                return
+    //            }
     //
-    //      // Update the initial position for the next iteration
-    //      initialPanPosition = currentPanPosition
+    //            guard tappedEntity == racquet else {
+    //                return
+    //            }
     //
-    //    default:
-    //      break
+    //            view.gestureRecognizers?.forEach { view.removeGestureRecognizer($0) }
+    //
+    //        case .changed:
+    //            // Calculate the distance based on the change in x-position of the pan gesture
+    //            let currentPanPosition = gesture.location(in: view)
+    //            let distance = Float(currentPanPosition.x - initialPanPosition.x) * 0.001 // Adjust the multiplier as needed
+    //
+    //            //            guard let tappedEntity = view.entity(at: currentPanPosition) as? ModelEntity else {
+    //            //                return
+    //            //            }
+    //            //
+    //            //            guard tappedEntity == racquet else {
+    //            //                return
+    //            //            }
+    //
+    //            view.gestureRecognizers?.forEach { view.removeGestureRecognizer($0) }
+    //
+    //            // Move the entity along the x-axis
+    //            racquet.moveAlongXAxis(distance: distance)
+    //
+    //            // Update the initial position for the next iteration
+    //            initialPanPosition = currentPanPosition
+    //
+    //        default:
+    //            break
+    //        }
     //    }
-    //  }
     
 }
 
+
+extension ModelEntity {
+    func moveAlongXAxis(distance: Float) {
+        transform.translation.x += distance
+    }
+}

@@ -11,45 +11,46 @@ import RealityKit
 
 struct ARViewContainer: UIViewRepresentable {
     
-    func makeUIView(context: Context) -> some UIView {
-        let arView = ARView(frame: .zero)
-        
-        arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap)))
-        
-        // Set up a pan gesture recognizer
-        //    let panGesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
-        //          arView.addGestureRecognizer(panGesture)
-        
-        
-        
-        context.coordinator.arView = arView
-        context.coordinator.buildEnvironment()
-        arView.session.delegate = context.coordinator
-        
-        //arView.addCoaching()
-        
-        return arView
-        
-    }
+  func makeUIView(context: Context) -> some UIView {
+   
+    let arView = ARView(frame: .zero)
+      
+    arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:))))
+      
+      let config = ARWorldTrackingConfiguration()
+      config.planeDetection = [.horizontal, .vertical]
+      config.environmentTexturing = .automatic
+      
+      if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+          config.sceneReconstruction = .mesh
+      }
+      
+      arView.session.run(config)
+      arView.addCoachingOverlay()
+      
+    context.coordinator.arView = arView
+    context.coordinator.buildFirstScene()
+   
+    arView.session.delegate = context.coordinator
+      
+    return arView
     
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
-    
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        
-    }
-    
+  }
+  
+  func makeCoordinator() -> Coordinator {
+    Coordinator()
+  }
+  
+  func updateUIView(_ uiView: UIViewType, context: Context) {
+      
+  }
+  
 }
 
 
 extension ARView: ARCoachingOverlayViewDelegate {
     
-    private func addVirtualObjects() {
-        
-    }
-    
-    func addCoaching() {
+    func addCoachingOverlay() {
         
         let coachingOverlay = ARCoachingOverlayView()
         coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -57,10 +58,6 @@ extension ARView: ARCoachingOverlayViewDelegate {
         coachingOverlay.session = self.session
         self.addSubview(coachingOverlay)
         
-    }
-    
-    public func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
-        addVirtualObjects()
     }
     
 }
