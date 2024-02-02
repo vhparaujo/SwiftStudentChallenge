@@ -14,7 +14,7 @@ struct ViewTwo: View {
         VStack {
             
             ZStack {
-                Image("fundoTexto")
+                Image(Texts.backgroundText)
                     .resizable()
                     .scaledToFit()
                 HStack {
@@ -36,7 +36,7 @@ struct ViewTwo: View {
                         
                         VStack{
                             HStack{
-                                Text("Next").foregroundStyle(.white)
+                                Text(Texts.nextButton).foregroundStyle(.white)
                                 
                                 Image(systemName: "chevron.right")
                                     .foregroundStyle(.white)
@@ -54,7 +54,7 @@ struct ViewTwo: View {
             }
             
         }.background(
-            Image("background")
+            Image(Texts.background)
                 .resizable()
                 .scaledToFill()
                 .clipped()

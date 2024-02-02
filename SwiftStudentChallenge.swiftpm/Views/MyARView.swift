@@ -14,6 +14,7 @@ struct MyARView: View {
     var body: some View {
         VStack{
             ARViewContainer().ignoresSafeArea(.all)
+                .navigationBarBackButtonHidden(true)
               
         }  .onAppear{
             openSheet.toggle()

@@ -9,9 +9,9 @@ import SwiftUI
 import UIKit
 
 extension Color {
-    static let azulClaro = Color("azulClaro")
+    static let myBlue = Color("myBlue")
 }
 
 extension UIColor {
-    static let azulClaro = UIColor(named: "azulClaro")
+    static let myBlue = UIColor(named: "myBlue")
 }

@@ -9,6 +9,12 @@ import ARKit
 import RealityKit
 import UIKit
 import Combine
+import AVFoundation
+
+// TODO: implementar audio se conseguir.
+// TODO: implementar o foco da quadra, para saber onde clicar antes de clicar para aparecer as entidades.
+// TODO: Finalizar as views intermediarias, pedir ajuda para o leo para centralizar os textos e diminuir as distancias entre eles.
+// TODO: Finalizar a view de créditos.
 
 class Coordinator: NSObject, ARSessionDelegate {
     
@@ -21,10 +27,12 @@ class Coordinator: NSObject, ARSessionDelegate {
     var racquet2: ModelEntity!
     var court: ModelEntity!
     
-    var opponentScore: Int = 0
-    var playerScore: Int = 0
+    var modelsAdded: Bool = false
     
-    func buildFirstScene() {
+    var isFirstScene: Bool = true
+    var hasFinished: Bool = false
+    
+    func buildTheScene(playerScore: Int, opponentScore: Int) {
         
         guard let view = arView else { return }
         
@@ -32,7 +40,7 @@ class Coordinator: NSObject, ARSessionDelegate {
         
         let modelEntity = ModelEntity()
         
-        let score = ModelEntity(mesh: MeshResource.generateText("Score: \(self.playerScore) X \(self.opponentScore)", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.09), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
+        let score = ModelEntity(mesh: MeshResource.generateText("Score: \(playerScore) X \(opponentScore)", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.09), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
         
         score.position = [-0.7, 1, 0]
         
@@ -83,12 +91,109 @@ class Coordinator: NSObject, ARSessionDelegate {
         anchor.addChild(modelEntity)
         
         view.installGestures(.scale.union(.translation), for: modelEntity)
+        
+        self.addPlayButton()
     }
-    
     
     func removeTheScene() {
         guard let arView = self.arView else { return }
+        
+        for subview in arView.subviews {
+            if let view = subview as? UIStackView {
+                view.removeFromSuperview()
+            }
+        }
+        
         arView.scene.anchors.removeAll()
+    }
+    
+    lazy var playButton: UIButton = {
+        let button = UIButton(configuration: .gray(), primaryAction: UIAction(handler: { [weak self] action in
+            
+            guard let arView = self?.arView else { return }
+            
+            guard let racquetPosition = self?.racquet.position else { return }
+            guard let ballPosition = self?.ball.position else { return }
+            
+            // Calculate the direction from the ball to the racquet/
+            let direction = normalize(racquetPosition - ballPosition)
+            
+            // Apply an impulse to the ball in the calculated direction
+            let impulse = direction * 5.21836
+            
+            self?.ball.physicsBody?.mode = .dynamic
+            
+            self?.ball.applyLinearImpulse(impulse, relativeTo: self?.racquet)
+            
+            
+            //            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            //                guard let path = Bundle.main.path(forResource: "ballSound 7", ofType:
+            //                "m4a") else { fatalError("Error loading audio file") }
+            //
+            //                let url = URL(fileURLWithPath: path)
+            //
+            //                self?.cancellable = AudioFileResource.loadAsync(contentsOf: url, inputMode: .spatial, loadingStrategy: .preload, shouldLoop: false)
+            //                    .collect()
+            //                    .sink(receiveCompletion: { loadCompletion in
+            //                        if case let .failure(error) = loadCompletion {
+            //                            print("Unable to load model \(error)")
+            //                        }
+            //
+            //                        self?.cancellable?.cancel()
+            //
+            //                    }, receiveValue: { resources in
+            //
+            //                        resources.forEach { resource in
+            //                            self?.modelEntity.playAudio(resource)
+            //                        }
+            //
+            //                    })
+            //            }
+            
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+                self?.removeTheScene()
+                
+                if self?.isFirstScene == true {
+                    self?.buildCongratsViews(title: Texts.congratulation, text: Texts.congratstTextOne, textButton: Texts.nextPoint)
+                    self?.isFirstScene = false
+                } else {
+                    self?.buildCongratsViews(title: Texts.congratulation, text: Texts.congratsTextTwo, textButton: Texts.finish)
+                    self?.hasFinished = true
+                }
+            }
+            
+        }))
+        
+        button.setTitle(Texts.play, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .blue
+        button.layer.cornerRadius = 8
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    func addPlayButton() {
+        guard let arView = self.arView else { return }
+        
+        let stackView = UIStackView(arrangedSubviews: [playButton])
+        
+        stackView.axis = .horizontal
+        stackView.alignment = .leading
+        stackView.backgroundColor = .clear
+        //        stackView.isLayoutMarginsRelativeArrangement = true
+        //        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        arView.addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: arView.centerXAnchor),
+            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -60),
+            stackView.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
     }
     
     @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
@@ -97,59 +202,130 @@ class Coordinator: NSObject, ARSessionDelegate {
         
         let tapLocation = recognizer.location(in: arView)
         
-        guard let tappedEntity = arView.entity(at: tapLocation) as? ModelEntity else {
-            return
-        }
+        let results = arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .horizontal)
         
-        guard tappedEntity == ball else {
-            return
-        }
-        
-        // Calculate the direction from the ball to the racquet
-        let direction = normalize(racquet.position - ball.position)
-        
-        // Apply an impulse to the ball in the calculated direction
-        let impulse = direction * 5.21836
-        
-        ball.physicsBody?.mode = .dynamic
-        
-        //        ball.addForce(impulse, relativeTo: nil)
-        
-        
-        ball.applyLinearImpulse(impulse, relativeTo: racquet)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
-            self.removeTheScene()
-            self.appearsCongratsView()
+        if results.first != nil {
+            if modelsAdded == false {
+                buildTheScene(playerScore: 0, opponentScore: 0)
+                self.modelsAdded = true
+            } else {
+                
+            }
         }
         
     }
     
-    lazy var congrats1View: UIView = {
-        let congratsView = UIView()
-        congratsView.translatesAutoresizingMaskIntoConstraints = false
-        congratsView.backgroundColor = UIColor.azulClaro
-        congratsView.layer.cornerRadius = 10
-            
-        return congratsView
+    lazy var congratsTitle: UILabel = {
+        let textLabel = UILabel()
+        textLabel.adjustsFontSizeToFitWidth = true
+        textLabel.isAccessibilityElement = true
+        textLabel.textAlignment = .center
+        textLabel.font = .preferredFont(forTextStyle: .title1)
+        textLabel.lineBreakMode = .byWordWrapping
+        
+        return textLabel
     }()
     
-    func appearsCongratsView() {
+    lazy var congratsText: UILabel = {
+        let textLabel = UILabel()
+        textLabel.adjustsFontSizeToFitWidth = true
+        textLabel.isAccessibilityElement = true
+        textLabel.numberOfLines = 0
+        textLabel.textAlignment = .center
+        textLabel.font = .preferredFont(forTextStyle: .headline)
+        textLabel.lineBreakMode = .byWordWrapping
+        
+        return textLabel
+    }()
+    
+    lazy var buttonNext: UIButton = {
+        let button = UIButton(configuration: .gray(), primaryAction: UIAction(handler: { [weak self] action in
+            
+            guard let arView = self?.arView else { return }
+            
+            for subview in arView.subviews {
+                if let view = subview as? UIStackView {
+                    view.removeFromSuperview()
+                }
+            }
+            
+            if self?.hasFinished == false {
+                self?.buildTheScene(playerScore: 40, opponentScore: 30)
+            } else {
+                self?.buildCreditsView()
+            }
+            
+        }))
+        
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .green
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    func buildCongratsViews(title: String, text: String, textButton: String) {
         guard let arView = self.arView else {return}
         
-        let stackView = UIStackView(arrangedSubviews: [congrats1View])
+        let stackView = UIStackView(arrangedSubviews: [congratsTitle, congratsText, buttonNext])
+        
+        congratsTitle.text = title
+        congratsText.text = text
+        buttonNext.setTitle(textButton, for: .normal)
+        
         stackView.axis = .vertical
-        stackView.spacing = 8
-        stackView.distribution = .fillEqually
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.backgroundColor = UIColor.myBlue
+        stackView.layer.cornerRadius = 10
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         arView.addSubview(stackView)
-
+        
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 100),
             stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -80),
             stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 20),
             stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -20),
+        ])
+        
+    }
+    
+    lazy var ballImage: UIImageView = {
+        let ballImage = UIImageView(image: UIImage(named: Texts.ballImageName))
+        
+        ballImage.translatesAutoresizingMaskIntoConstraints = false
+        
+        return ballImage
+    }()
+    
+    func buildCreditsView() {
+        guard let arView = self.arView else { return }
+        
+        let stackView = UIStackView(arrangedSubviews: [congratsTitle, ballImage, congratsText])
+        
+#warning("colocar os textos na struct Texts")
+        congratsTitle.text = "I love Tennis"
+        congratsText.text = "Thank you o much for help me and make company for me in this journal."
+        
+        stackView.axis = .vertical
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.backgroundColor = UIColor.myBlue
+        stackView.layer.cornerRadius = 10
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        arView.addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: arView.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor)
         ])
         
     }

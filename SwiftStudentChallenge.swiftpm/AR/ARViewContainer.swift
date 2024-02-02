@@ -26,11 +26,9 @@ struct ARViewContainer: UIViewRepresentable {
       }
       
       arView.session.run(config)
-      arView.addCoachingOverlay()
       
     context.coordinator.arView = arView
-    context.coordinator.buildFirstScene()
-   
+//      context.coordinator.addPlayButton()
     arView.session.delegate = context.coordinator
       
     return arView
@@ -45,19 +43,4 @@ struct ARViewContainer: UIViewRepresentable {
       
   }
   
-}
-
-
-extension ARView: ARCoachingOverlayViewDelegate {
-    
-    func addCoachingOverlay() {
-        
-        let coachingOverlay = ARCoachingOverlayView()
-        coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        coachingOverlay.goal = .horizontalPlane
-        coachingOverlay.session = self.session
-        self.addSubview(coachingOverlay)
-        
-    }
-    
 }

@@ -3,13 +3,11 @@ import SwiftUI
 struct ViewOne: View {
     
     var body: some View {
-        
-       
-            
+   
             VStack {
                 
                 ZStack {
-                    Image("fundoTexto")
+                    Image(Texts.backgroundText)
                         .resizable()
                         .scaledToFit()
                     HStack {
@@ -32,7 +30,7 @@ struct ViewOne: View {
                             
                             VStack{
                                 HStack{
-                                    Text("Next").foregroundStyle(.white)
+                                    Text(Texts.nextButton).foregroundStyle(.white)
                                     
                                     Image(systemName: "chevron.right")
                                         .foregroundStyle(.white)
@@ -50,13 +48,11 @@ struct ViewOne: View {
                 }
                 
             }.background(
-                Image("background")
+                Image(Texts.background)
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea(.all)
             )
-            
-        
         
     }
 }

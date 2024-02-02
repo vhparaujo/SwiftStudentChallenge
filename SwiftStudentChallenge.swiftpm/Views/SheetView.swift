@@ -16,20 +16,20 @@ struct SheetView: View {
         VStack{
             VStack {
                 
-                Text("Tennis").font(.title).padding()
+                Text(Texts.tennis).font(.title).padding()
                 
-                Text(" - This scene will use the AR to explain just a little bit about how the tennis score works.").font(.title3)
-                Text(" - The next View is an ARView, so please look for a horizontal surface, like a floor to see the magic happens.").font(.title3)
+                Text(Texts.textSheet1).font(.title3)
+                Text(Texts.textSheet2).font(.title3)
                 
                 Spacer()
                 
-                Image("bolinhaImagem")
+                Image(Texts.ballImageName)
                 
                 Spacer()
   
                 VStack{
                     HStack{
-                        Text("Play").foregroundStyle(.white)
+                        Text(Texts.play).foregroundStyle(.white)
                     }.padding()
                 }.background(RoundedRectangle(cornerRadius: 10)
                     .foregroundStyle(.green)
@@ -42,7 +42,7 @@ struct SheetView: View {
             }.padding()
             
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.azulClaro)
+            .background(Color.myBlue)
         
     }
 }
