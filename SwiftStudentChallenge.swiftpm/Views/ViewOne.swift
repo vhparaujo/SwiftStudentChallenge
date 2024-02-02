@@ -4,7 +4,7 @@ struct ViewOne: View {
     
     var body: some View {
         
-        NavigationView {
+       
             
             VStack {
                 
@@ -56,8 +56,7 @@ struct ViewOne: View {
                     .ignoresSafeArea(.all)
             )
             
-        }
-        .navigationViewStyle(.stack)
+        
         
     }
 }

@@ -4,7 +4,9 @@ import SwiftUI
 struct MyApp: App {
     var body: some Scene {
         WindowGroup {
-            ViewOne().preferredColorScheme(.light)
+            NavigationStack{
+                ViewOne().preferredColorScheme(.light)
+            }
         }
     }
 }

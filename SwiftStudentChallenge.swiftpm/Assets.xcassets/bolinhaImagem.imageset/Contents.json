@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "bolinhaImagem.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

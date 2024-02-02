@@ -24,8 +24,6 @@ class Coordinator: NSObject, ARSessionDelegate {
     var opponentScore: Int = 0
     var playerScore: Int = 0
     
-    var initialPanPosition: CGPoint = .zero
-    
     func buildFirstScene() {
         
         guard let view = arView else { return }
@@ -90,12 +88,23 @@ class Coordinator: NSObject, ARSessionDelegate {
     
     func removeTheScene() {
         guard let arView = self.arView else { return }
-        
         arView.scene.anchors.removeAll()
     }
     
     @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
-            
+        
+        guard let arView = self.arView else {return}
+        
+        let tapLocation = recognizer.location(in: arView)
+        
+        guard let tappedEntity = arView.entity(at: tapLocation) as? ModelEntity else {
+            return
+        }
+        
+        guard tappedEntity == ball else {
+            return
+        }
+        
         // Calculate the direction from the ball to the racquet
         let direction = normalize(racquet.position - ball.position)
         
@@ -111,62 +120,38 @@ class Coordinator: NSObject, ARSessionDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
             self.removeTheScene()
-            
+            self.appearsCongratsView()
         }
         
     }
     
-    //    @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-    //
-    //        guard let view = self.arView else {return}
-    //
-    //        switch gesture.state {
-    //        case .began:
-    //
-    //            // Save the initial position of the pan gesture
-    //            initialPanPosition = gesture.location(in: view)
-    //
-    //            guard let tappedEntity = view.entity(at: initialPanPosition) as? ModelEntity else {
-    //                return
-    //            }
-    //
-    //            guard tappedEntity == racquet else {
-    //                return
-    //            }
-    //
-    //            view.gestureRecognizers?.forEach { view.removeGestureRecognizer($0) }
-    //
-    //        case .changed:
-    //            // Calculate the distance based on the change in x-position of the pan gesture
-    //            let currentPanPosition = gesture.location(in: view)
-    //            let distance = Float(currentPanPosition.x - initialPanPosition.x) * 0.001 // Adjust the multiplier as needed
-    //
-    //            //            guard let tappedEntity = view.entity(at: currentPanPosition) as? ModelEntity else {
-    //            //                return
-    //            //            }
-    //            //
-    //            //            guard tappedEntity == racquet else {
-    //            //                return
-    //            //            }
-    //
-    //            view.gestureRecognizers?.forEach { view.removeGestureRecognizer($0) }
-    //
-    //            // Move the entity along the x-axis
-    //            racquet.moveAlongXAxis(distance: distance)
-    //
-    //            // Update the initial position for the next iteration
-    //            initialPanPosition = currentPanPosition
-    //
-    //        default:
-    //            break
-    //        }
-    //    }
+    lazy var congrats1View: UIView = {
+        let congratsView = UIView()
+        congratsView.translatesAutoresizingMaskIntoConstraints = false
+        congratsView.backgroundColor = UIColor.azulClaro
+        congratsView.layer.cornerRadius = 10
+            
+        return congratsView
+    }()
     
-}
+    func appearsCongratsView() {
+        guard let arView = self.arView else {return}
+        
+        let stackView = UIStackView(arrangedSubviews: [congrats1View])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.distribution = .fillEqually
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        arView.addSubview(stackView)
 
-
-extension ModelEntity {
-    func moveAlongXAxis(distance: Float) {
-        transform.translation.x += distance
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 100),
+            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -80),
+            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -20),
+        ])
+        
     }
+    
 }
