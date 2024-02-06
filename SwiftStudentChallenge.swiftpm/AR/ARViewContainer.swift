@@ -24,11 +24,10 @@ struct ARViewContainer: UIViewRepresentable {
       if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
           config.sceneReconstruction = .mesh
       }
-      
+    
       arView.session.run(config)
       
     context.coordinator.arView = arView
-//      context.coordinator.addPlayButton()
     arView.session.delegate = context.coordinator
       
     return arView

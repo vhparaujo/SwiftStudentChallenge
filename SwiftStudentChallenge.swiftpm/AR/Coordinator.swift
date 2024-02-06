@@ -35,7 +35,7 @@ class Coordinator: NSObject, ARSessionDelegate {
     func buildTheScene(playerScore: Int, opponentScore: Int) {
         
         guard let view = arView else { return }
-        
+      
         let anchor = AnchorEntity(.plane(.horizontal, classification: .any, minimumBounds: .zero))
         
         let modelEntity = ModelEntity()
@@ -150,8 +150,8 @@ class Coordinator: NSObject, ARSessionDelegate {
             //                    })
             //            }
             
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+            #warning("voltar o tempo para 7 segundos")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 7 /*7*/) {
                 self?.removeTheScene()
                 
                 if self?.isFirstScene == true {
@@ -182,8 +182,6 @@ class Coordinator: NSObject, ARSessionDelegate {
         stackView.axis = .horizontal
         stackView.alignment = .leading
         stackView.backgroundColor = .clear
-        //        stackView.isLayoutMarginsRelativeArrangement = true
-        //        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         arView.addSubview(stackView)
@@ -191,7 +189,7 @@ class Coordinator: NSObject, ARSessionDelegate {
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: arView.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -60),
-            stackView.heightAnchor.constraint(equalToConstant: 44)
+            stackView.heightAnchor.constraint(equalToConstant: 60)
         ])
         
     }
@@ -203,7 +201,7 @@ class Coordinator: NSObject, ARSessionDelegate {
         let tapLocation = recognizer.location(in: arView)
         
         let results = arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .horizontal)
-        
+                
         if results.first != nil {
             if modelsAdded == false {
                 buildTheScene(playerScore: 0, opponentScore: 0)
@@ -220,7 +218,7 @@ class Coordinator: NSObject, ARSessionDelegate {
         textLabel.adjustsFontSizeToFitWidth = true
         textLabel.isAccessibilityElement = true
         textLabel.textAlignment = .center
-        textLabel.font = .preferredFont(forTextStyle: .title1)
+        textLabel.font = UIFont.boldSystemFont(ofSize:  UIFont.preferredFont(forTextStyle: .title1).pointSize)
         textLabel.lineBreakMode = .byWordWrapping
         
         return textLabel
@@ -274,21 +272,21 @@ class Coordinator: NSObject, ARSessionDelegate {
         buttonNext.setTitle(textButton, for: .normal)
         
         stackView.axis = .vertical
-        stackView.spacing = 10
+        stackView.distribution = .equalSpacing
         stackView.alignment = .center
         stackView.backgroundColor = UIColor.myBlue
         stackView.layer.cornerRadius = 10
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
+        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 60, right: 15)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         arView.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 100),
-            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -80),
-            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -20),
+            stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 150),
+            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -150),
+            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 150),
+            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -150),
         ])
         
     }
