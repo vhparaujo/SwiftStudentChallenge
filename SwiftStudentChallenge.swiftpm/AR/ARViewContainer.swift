@@ -15,7 +15,7 @@ struct ARViewContainer: UIViewRepresentable {
    
     let arView = ARView(frame: .zero)
       
-    arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:))))
+//    arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:))))
       
       let config = ARWorldTrackingConfiguration()
       config.planeDetection = [.horizontal, .vertical]
@@ -28,6 +28,8 @@ struct ARViewContainer: UIViewRepresentable {
       arView.session.run(config)
       
     context.coordinator.arView = arView
+      context.coordinator.addCoaching()
+//      context.coordinator.buildTheScene(playerScore: 0, opponentScore: 0)
     arView.session.delegate = context.coordinator
       
     return arView
@@ -43,3 +45,4 @@ struct ARViewContainer: UIViewRepresentable {
   }
   
 }
+

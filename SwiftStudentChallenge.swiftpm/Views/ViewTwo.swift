@@ -31,7 +31,7 @@ struct ViewTwo: View {
                 HStack{
                     Spacer()
                     NavigationLink(destination: {
-                        MyARView()
+                        TennisScoreView().navigationBarBackButtonHidden(true)
                     }, label: {
                         
                         VStack{
@@ -57,9 +57,8 @@ struct ViewTwo: View {
             Image(Texts.background)
                 .resizable()
                 .scaledToFill()
-                .clipped()
                 .ignoresSafeArea(.all)
         )
-  
+        
     }
 }

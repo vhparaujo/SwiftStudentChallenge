@@ -8,29 +8,27 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "SwiftStudentChallenge",
+    name: "iTennis",
     platforms: [
         .iOS("16.0")
     ],
     products: [
         .iOSApplication(
-            name: "SwiftStudentChallenge",
+            name: "iTennis",
             targets: ["AppModule"],
             bundleIdentifier: "VictorHugo.SwiftStudentChallenge",
             teamIdentifier: "K559Z2V9Q2",
             displayVersion: "1.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .beachball),
+            appIcon: .asset("AppIcon"),
             accentColor: .presetColor(.green),
             supportedDeviceFamilies: [
                 .pad,
                 .phone
             ],
             supportedInterfaceOrientations: [
-                .portrait,
                 .landscapeRight,
-                .landscapeLeft,
-                .portraitUpsideDown(.when(deviceFamilies: [.pad]))
+                .landscapeLeft
             ],
             capabilities: [
                 .camera(purposeString: "Need access to the camera")

@@ -26,7 +26,7 @@ struct SheetView: View {
                 Image(Texts.ballImageName)
                 
                 Spacer()
-  
+                
                 VStack{
                     HStack{
                         Text(Texts.play).foregroundStyle(.white)
