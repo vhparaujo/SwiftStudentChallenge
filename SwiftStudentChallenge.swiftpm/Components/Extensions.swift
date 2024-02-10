@@ -10,6 +10,7 @@ import UIKit
 
 extension Color {
     static let myBlue = Color("myBlue")
+    static let myDarkBlue = Color("myDarkBlue")
 }
 
 extension UIColor {
