@@ -7,8 +7,11 @@
 
 import SwiftUI
 
+// TODO: Trocar a imagem dos textos pela versão programática.
+
 struct TennisScoreView: View {
     var body: some View {
+        
         VStack{
  
             HStack{
@@ -23,12 +26,10 @@ struct TennisScoreView: View {
             
             Spacer()
             
-            #warning("arrumar o tamanho da imagem")
             VStack {
                 Image("TextsScore")
-                    .resizable()
-                    .scaledToFit()
-            }.padding()
+                    .cornerRadius(10)
+            }
             
             NavigationLink(destination: {
                 MyARView()
@@ -59,9 +60,6 @@ struct TennisScoreView: View {
             }.padding()
            
         }.background(Color.myBlue)
+        
     }
-}
-
-#Preview {
-    TennisScoreView()
 }

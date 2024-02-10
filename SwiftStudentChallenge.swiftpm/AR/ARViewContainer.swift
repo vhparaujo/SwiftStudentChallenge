@@ -11,38 +11,38 @@ import RealityKit
 
 struct ARViewContainer: UIViewRepresentable {
     
-  func makeUIView(context: Context) -> some UIView {
-   
-    let arView = ARView(frame: .zero)
-      
-//    arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:))))
-      
-      let config = ARWorldTrackingConfiguration()
-      config.planeDetection = [.horizontal, .vertical]
-      config.environmentTexturing = .automatic
-      
-      if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
-          config.sceneReconstruction = .mesh
-      }
+    func makeUIView(context: Context) -> some UIView {
+        
+        let arView = ARView(frame: .zero)
+        
+        //    arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:))))
+        
+        let config = ARWorldTrackingConfiguration()
+        config.planeDetection = [.horizontal, .vertical]
+        config.environmentTexturing = .automatic
+        
+        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+            config.sceneReconstruction = .mesh
+        }
+        
+        arView.session.run(config)
+        
+        context.coordinator.arView = arView
+        context.coordinator.addCoaching()
+        
+        arView.session.delegate = context.coordinator
+        
+        return arView
+        
+    }
     
-      arView.session.run(config)
-      
-    context.coordinator.arView = arView
-      context.coordinator.addCoaching()
-//      context.coordinator.buildTheScene(playerScore: 0, opponentScore: 0)
-    arView.session.delegate = context.coordinator
-      
-    return arView
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
     
-  }
-  
-  func makeCoordinator() -> Coordinator {
-    Coordinator()
-  }
-  
-  func updateUIView(_ uiView: UIViewType, context: Context) {
-      
-  }
-  
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        
+    }
+    
 }
 

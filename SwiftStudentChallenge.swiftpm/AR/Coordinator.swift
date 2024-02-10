@@ -50,11 +50,11 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
         let modelEntity = ModelEntity()
         self.modelEntity = modelEntity
         
-        let player1Score = ModelEntity(mesh: MeshResource.generateText("Player 1:  \(player1GameScore)  6 3 2", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.09), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .green, isMetallic: false)])
+        let player1Score = ModelEntity(mesh: MeshResource.generateText("Player 1:  \(player1GameScore)  6 3 2", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.1), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .green, isMetallic: false)])
         
         player1Score.position = [-1.4, 1.2, 0]
         
-        let player2Score = ModelEntity(mesh: MeshResource.generateText("Player 2: \(player2GameScore)  4 6 0", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.09), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+        let player2Score = ModelEntity(mesh: MeshResource.generateText("Player 2: \(player2GameScore)  4 6 0", extrusionDepth: 0.03, font: .systemFont(ofSize: 0.1), containerFrame: .zero, alignment: .center, lineBreakMode: .byCharWrapping), materials: [SimpleMaterial(color: .red, isMetallic: false)])
         
         player2Score.position = [-1.4, 1, 0]
         
@@ -106,7 +106,7 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
         anchor.addChild(modelEntity)
         
         view.installGestures(.scale.union(.translation), for: modelEntity)
-                
+        
         self.addPlayButton()
     }
     
@@ -202,7 +202,7 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: arView.centerXAnchor),
             stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -60),
-            stackView.heightAnchor.constraint(equalToConstant: 80)
+            stackView.heightAnchor.constraint(equalToConstant: 60)
         ])
         
     }
@@ -259,7 +259,7 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
             if self?.hasFinished == false {
                 self?.buildTheScene(player1GameScore: 30, player2GameScore: 40)
             } else {
-//                self?.buildCongratsViews(title: Texts.thankYou, text: Texts.congratsTextFinal, textButton: "", hideImage: false, hideButton: true)
+                //                self?.buildCongratsViews(title: Texts.thankYou, text: Texts.congratsTextFinal, textButton: "", hideImage: false, hideButton: true)
             }
             
         }))
@@ -312,32 +312,32 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
         return ballImage
     }()
     
-//    func buildCreditsView() {
-//        guard let arView = self.arView else { return }
-//        
-//        let stackView = UIStackView(arrangedSubviews: [congratsTitle, ballImage, congratsText])
-//        
-//        congratsTitle.text = Texts.IloveTennis
-//        congratsText.text = Texts.finalText
-//        
-//        stackView.axis = .vertical
-//        stackView.distribution = .equalSpacing
-//        stackView.alignment = .center
-//        stackView.backgroundColor = UIColor.myBlue
-//        stackView.layer.cornerRadius = 10
-//        stackView.isLayoutMarginsRelativeArrangement = true
-//        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 60, right: 15)
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        arView.addSubview(stackView)
-//        
-//        NSLayoutConstraint.activate([
-//            stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 150),
-//            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -150),
-//            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 150),
-//            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -150),
-//        ])
-//        
-//    }
+    //    func buildCreditsView() {
+    //        guard let arView = self.arView else { return }
+    //
+    //        let stackView = UIStackView(arrangedSubviews: [congratsTitle, ballImage, congratsText])
+    //
+    //        congratsTitle.text = Texts.IloveTennis
+    //        congratsText.text = Texts.finalText
+    //
+    //        stackView.axis = .vertical
+    //        stackView.distribution = .equalSpacing
+    //        stackView.alignment = .center
+    //        stackView.backgroundColor = UIColor.myBlue
+    //        stackView.layer.cornerRadius = 10
+    //        stackView.isLayoutMarginsRelativeArrangement = true
+    //        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 60, right: 15)
+    //        stackView.translatesAutoresizingMaskIntoConstraints = false
+    //
+    //        arView.addSubview(stackView)
+    //
+    //        NSLayoutConstraint.activate([
+    //            stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 150),
+    //            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -150),
+    //            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 150),
+    //            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -150),
+    //        ])
+    //        
+    //    }
     
 }
