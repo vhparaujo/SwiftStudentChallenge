@@ -31,6 +31,7 @@ struct ViewOne: View {
                         VStack{
                             HStack{
                                 Text(Texts.nextButton).foregroundStyle(.white)
+                                    .font(.title3)
                                 
                                 Image(systemName: "chevron.right")
                                     .foregroundStyle(.white)

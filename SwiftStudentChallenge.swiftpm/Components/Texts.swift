@@ -57,4 +57,17 @@ struct Texts {
     // ------ Texts of Credits View --------
     static let thankYou: String = "Thank You!! 🙏"
     
+    // ------ Texts of TennisScoreView --------
+    static let firstTopic: String = "- A tennis match is divided into sets, games, and points. A set consists of a bunch of games, and a game consists of a bunch of points."
+    
+    static let secondTopic: String = "- You score a point when the ball bounces in your opponent's court and they fail to hit it back. If you mess up your serve more than once or throw the ball out of the service area, the point goes to your opponent."
+    
+    static let thirdTopic: String = "- Points are counted like this: first point is 15, second is 30, third is 40, and the fourth one wins the game."
+    
+    static let fourthTopic: String = "- To win a set, you need to be the first to get 6 games, with at least a two-game lead over your opponent."
+    
+    static let fifthTopic: String = "- To win the match, you have to win the best of three or best of five sets."
+    
+    static let howTennisWorks: String = "How tennis works?"
+    
 }
