@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ViewOne: View {
     
+    @State var orientation = UIDeviceOrientation.unknown
+    
     var body: some View {
         
         VStack {
@@ -11,10 +13,19 @@ struct ViewOne: View {
                     .resizable()
                     .scaledToFit()
                 HStack {
-                    Text(Texts.text1)
-                        .font(.title)
-                        .fontWeight(.semibold)
-                        .padding()
+                    
+                    if orientation.isPortrait {
+                        Text(Texts.text1)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .padding()
+                    } else {
+                        Text(Texts.text1)
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .padding()
+                    }
+                    
                 }
                 .padding()
             }.padding(.horizontal)
@@ -54,6 +65,10 @@ struct ViewOne: View {
                 .scaledToFill()
                 .ignoresSafeArea(.all)
         )
+        
+        .onRotate { newOrientation in
+            orientation = newOrientation
+        }
         
     }
 }
