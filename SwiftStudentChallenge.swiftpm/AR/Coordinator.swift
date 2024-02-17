@@ -135,7 +135,6 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
             let direction = racquetPosition / ballPosition
             
             // Apply an impulse to the ball in the calculated direction
-            // 5.21836
             let impulse = direction
             
             self?.ball.physicsBody?.mode = .dynamic
@@ -165,7 +164,7 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
                     
                 })
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5 /*7*/) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 self?.removeTheScene()
                 
                 if self?.isFirstScene == true {
@@ -207,26 +206,7 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
         ])
         
     }
-    
-    //    @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
-    //
-    //        guard let arView = self.arView else { return }
-    //
-    //        let tapLocation = recognizer.location(in: arView)
-    //
-    //        let results = arView.raycast(from: tapLocation, allowing: .estimatedPlane, alignment: .horizontal)
-    //
-    //        if results.first != nil {
-    //            if modelsAdded == false {
-    //                buildTheScene(playerScore: 0, opponentScore: 0)
-    //                self.modelsAdded = true
-    //            } else {
-    //
-    //            }
-    //        }
-    //
-    //    }
-    
+ 
     lazy var congratsTitle: UILabel = {
         let textLabel = UILabel()
         textLabel.adjustsFontSizeToFitWidth = true
@@ -260,7 +240,7 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
             if self?.hasFinished == false {
                 self?.buildTheScene(player1GameScore: 30, player2GameScore: 40)
             } else {
-                //                self?.buildCongratsViews(title: Texts.thankYou, text: Texts.congratsTextFinal, textButton: "", hideImage: false, hideButton: true)
+                
             }
             
         }))
@@ -312,33 +292,5 @@ class Coordinator: NSObject, ARSessionDelegate, ARCoachingOverlayViewDelegate {
         
         return ballImage
     }()
-    
-    //    func buildCreditsView() {
-    //        guard let arView = self.arView else { return }
-    //
-    //        let stackView = UIStackView(arrangedSubviews: [congratsTitle, ballImage, congratsText])
-    //
-    //        congratsTitle.text = Texts.IloveTennis
-    //        congratsText.text = Texts.finalText
-    //
-    //        stackView.axis = .vertical
-    //        stackView.distribution = .equalSpacing
-    //        stackView.alignment = .center
-    //        stackView.backgroundColor = UIColor.myBlue
-    //        stackView.layer.cornerRadius = 10
-    //        stackView.isLayoutMarginsRelativeArrangement = true
-    //        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 15, bottom: 60, right: 15)
-    //        stackView.translatesAutoresizingMaskIntoConstraints = false
-    //
-    //        arView.addSubview(stackView)
-    //
-    //        NSLayoutConstraint.activate([
-    //            stackView.topAnchor.constraint(equalTo: arView.topAnchor, constant: 150),
-    //            stackView.bottomAnchor.constraint(equalTo: arView.bottomAnchor, constant: -150),
-    //            stackView.leadingAnchor.constraint(equalTo: arView.leadingAnchor, constant: 150),
-    //            stackView.trailingAnchor.constraint(equalTo: arView.trailingAnchor, constant: -150),
-    //        ])
-    //        
-    //    }
     
 }
